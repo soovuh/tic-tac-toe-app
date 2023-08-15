@@ -1,23 +1,27 @@
-import axios from "axios";
-import {useState} from "react";
+import React from 'react'
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
-function App() {
-    const [data, setData] = useState([]);
-    axios.get('http://localhost:8000/api/test/').then(res => {
-        const data = res.data;
-        setData(data)
-    })
+import Home from "./containers/Home";
+import Signup from "./containers/Signup";
+import Login from "./containers/Login";
+import Activate from "./containers/Activate";
+import ResetPassword from "./containers/ResetPassword";
+import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
+import Layout from "./hocs/Layout";
 
-    return (
-        data.map(obj => (
-                <div>
-                    <h1>{obj.first_name}</h1>
-                    <h2>{obj.last_name}</h2>
-                    <h3>{obj.created_at}</h3>
-                </div>
-            )
-        )
-    )
-}
+const App = () => (
+    <Router>
+        <Layout>
+            <Routes>
+                <Route path='/' element={<Home/>}/>
+                <Route path='/signup' element={<Signup/>}/>
+                <Route path='/login' element={<Login/>}/>
+                <Route path='/activate/:uid/:token' element={<Activate/>}/>
+                <Route path='/reset-password' element={<ResetPassword/>}/>
+                <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
+            </Routes>
+        </Layout>
+    </Router>
+)
 
 export default App;
