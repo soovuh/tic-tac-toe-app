@@ -9,19 +9,25 @@ import ResetPassword from "./containers/ResetPassword";
 import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
 import Layout from "./hocs/Layout";
 
+import {Provider} from "react-redux";
+import store from "./store";
+
 const App = () => (
-    <Router>
-        <Layout>
-            <Routes>
-                <Route path='/' element={<Home/>}/>
-                <Route path='/signup' element={<Signup/>}/>
-                <Route path='/login' element={<Login/>}/>
-                <Route path='/activate/:uid/:token' element={<Activate/>}/>
-                <Route path='/reset-password' element={<ResetPassword/>}/>
-                <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
-            </Routes>
-        </Layout>
-    </Router>
+    <Provider store={store}>
+        <Router>
+            <Layout>
+                <Routes>
+                    <Route path='/' element={<Home/>}/>
+                    <Route path='/signup' element={<Signup/>}/>
+                    <Route path='/login' element={<Login/>}/>
+                    <Route path='/activate/:uid/:token' element={<Activate/>}/>
+                    <Route path='/reset-password' element={<ResetPassword/>}/>
+                    <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
+                </Routes>
+            </Layout>
+        </Router>
+    </Provider>
+
 )
 
 export default App;
