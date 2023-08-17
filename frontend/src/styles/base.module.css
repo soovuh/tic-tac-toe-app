@@ -28,7 +28,7 @@
     margin-right: 20px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
 }
 
 .logo img {
@@ -65,21 +65,35 @@
     justify-content: center;
 }
 
-.right a {
-    text-decoration: none;
-    margin-right: 20px;
-    padding: 10px 30px;
-    background-color: #980505;
-    border-radius: 40px;
+
+.burger {
+    display: none;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.2s;
 }
 
-.right a:hover {
-    background-color: #fff;
-    color: black;
+.burger span {
+    color: #980505;
+    width: 100%;
 }
 
+.burger span ion-icon:hover {
+    color: #fff;
+}
+
+.burger span ion-icon {
+    color: #980505;
+    font-size: 3em;
+    transition: color 0.3s;
+}
+
+.burger-nav {
+    position: static;
+    display: none;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
 
 .footer {
     position: static;
@@ -117,3 +131,47 @@
     justify-content: center;
 }
 
+.play-button {
+    text-decoration: none;
+    margin-right: 20px;
+    padding: 10px 30px;
+    background-color: #980505;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.2s;
+}
+
+.play-button:hover {
+    background-color: #fff;
+    color: black;
+}
+
+@media (max-width: 800px) {
+
+    .nav-link {
+        margin-bottom: 5px;
+    }
+
+    .burger {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .burger-nav {
+        display: flex;
+    }
+
+
+    .nav-links {
+        display: none;
+    }
+
+    .right {
+        display: none;
+    }
+
+    .play-button {
+        margin: 5px 0 0 0;
+
+    }
+}
