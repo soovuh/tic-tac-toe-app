@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import base_styles from '../styles/base.module.css'
 import logo from '../logo.png'
+import {Link} from "react-router-dom";
 
 const Navbar = () => {
     const [isShown, setIsShown] = useState(false)
@@ -13,15 +14,15 @@ const Navbar = () => {
                     <div className={base_styles.logo}><img src={logo} alt=""/></div>
                     <div className={base_styles.link_wrapper}>
                         <ul className={base_styles["nav-links"]}>
-                            <li><a className={base_styles["nav-link"]} href="#">Home</a></li>
-                            <li><a className={base_styles["nav-link"]} href="#">TopList</a></li>
-                            <li><a className={base_styles["nav-link"]} href="#">About</a></li>
-                            <li><a className={base_styles["nav-link"]} href="#">Log In</a></li>
+                            <li><Link className={base_styles["nav-link"]} to='/'>Home</Link></li>
+                            <li><Link className={base_styles["nav-link"]} to='/toplist'>TopList</Link></li>
+                            <li><Link className={base_styles["nav-link"]} to='/about'>About</Link></li>
+                            <li><Link className={base_styles["nav-link"]} to='/login'>Log In</Link></li>
                         </ul>
                     </div>
                 </div>
                 <div className={base_styles.right}>
-                    <a className={base_styles["play-button"]} href="#">Play</a>
+                    <Link className={base_styles["play-button"]} to="/login">Play</Link>
                 </div>
                 <div className={base_styles.burger}>
                 <span onClick={() => setIsShown(!isShown)}>
@@ -33,11 +34,11 @@ const Navbar = () => {
             </nav>
             {
                 isShown && <nav className={base_styles["burger-nav"]} style={{color: "#fff"}}>
-                    <a className={base_styles["nav-link"]} href="#">Home</a>
-                    <a className={base_styles["nav-link"]} href="#">TopList</a>
-                    <a className={base_styles["nav-link"]} href="#">About</a>
-                    <a className={base_styles["nav-link"]} href="#">Log In</a>
-                    <a className={base_styles["play-button"]} href="#">Play</a>
+                    <Link className={base_styles["nav-link"]} to="/">Home</Link>
+                    <Link className={base_styles["nav-link"]} to='/toplist'>TopList</Link>
+                    <Link className={base_styles["nav-link"]} to='/about'>About</Link>
+                    <Link className={base_styles["nav-link"]} to='/login'>Log In</Link>
+                    <Link className={base_styles["play-button"]} to='/login'>Play</Link>
                 </nav>
             }
         </>
