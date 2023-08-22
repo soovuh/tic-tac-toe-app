@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Link, Redirect} from 'react-router-dom'
 import {connect} from "react-redux";
 import {login} from "../actions/auth";
+import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 
 const Login = ({ login }) => {
@@ -19,7 +20,7 @@ const Login = ({ login }) => {
     // Is the user authenticated?
     // Redirect them to the home page
     return (
-        <div className={styles['login-container']}>
+        <div className={base_styles.wrapper}>
             <h1>Sign in</h1>
             <p>Sign into your account</p>
             <form onSubmit={e => onSubmit(e)}>
