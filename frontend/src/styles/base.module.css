@@ -141,7 +141,7 @@
     color: #980505;
 }
 
-ion-icon {
+.footer .footer_icons ion-icon {
     width: 100%;
     margin-right: 5px;
     font-size: 20px;
@@ -149,7 +149,7 @@ ion-icon {
     transition: color 0.2s;
 }
 
-ion-icon:hover {
+.footer .footer_icons ion-icon:hover {
     color: #980505;
 }
 
@@ -216,4 +216,18 @@ ion-icon:hover {
         margin: 5px 0 0 0;
 
     }
+}
+
+@media (max-width: 450px) {
+    .footer .footer_icons ion-icon {
+        font-size: 15px;
+    }
+    .footer_link {
+        width: 15px;
+    }
+
+    .footer_message {
+        font-size: 0.7em;
+    }
+
 }
