@@ -1,11 +1,11 @@
 import React, {useState} from "react";
-import {Link, Redirect} from 'react-router-dom'
+import {Link, Navigate} from 'react-router-dom'
 import {connect} from "react-redux";
 import {login} from "../actions/auth";
 import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 
-const Login = ({login}) => {
+const Login = ({login, isAuthenticated}) => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -17,8 +17,10 @@ const Login = ({login}) => {
         login(email, password)
     }
 
-    // Is the user authenticated?
-    // Redirect them to the home page
+    if (isAuthenticated) {
+        return <Navigate to='/profile' />
+    }
+
     return (
         <div className={base_styles.wrapper}>
             <div className={styles.signin_wrapper}>
@@ -34,7 +36,7 @@ const Login = ({login}) => {
                             required
                         />
                     </div>
-                    <div >
+                    <div>
                         <input
                             type="password"
                             placeholder='Password'
@@ -45,7 +47,7 @@ const Login = ({login}) => {
                             required
                         />
                     </div>
-                    <button  type='submit'>Login</button>
+                    <button type='submit'>Login</button>
                 </form>
                 <p>
                     Don`t have an account? <Link to='/signup'>Sign up</Link>
@@ -58,8 +60,8 @@ const Login = ({login}) => {
     )
 }
 
-// const mapStateToProps = state => ({
-//     // is Authenticated?
-// })
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+})
 
-export default connect(null, {login})(Login);
+export default connect(mapStateToProps, {login})(Login);
