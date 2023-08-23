@@ -17,10 +17,8 @@ const Login = ({login, isAuthenticated}) => {
         login(email, password)
     }
 
-    // Is the user authenticated?
-    // Redirect them to the home page
     if (isAuthenticated) {
-        return <Navigate to='/' />
+        return <Navigate to='/profile' />
     }
 
     return (
