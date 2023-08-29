@@ -6,6 +6,7 @@ import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 
 const Signup = ({signup, isAuthenticated}) => {
+    const [error, setError] = useState('');
     const [accountCreated, setAccountCreated] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
@@ -15,11 +16,23 @@ const Signup = ({signup, isAuthenticated}) => {
     })
     const {name, email, password, re_password} = formData;
     const onChange = e => setFormData({...formData, [e.target.name]: e.target.value})
-    const onSubmit = e => {
+    const onSubmit = async e => {
         e.preventDefault();
         if (password === re_password) {
-            signup(name, email, password, re_password);
-            setAccountCreated(true)
+            try {
+                await signup(name, email, password, re_password);
+                setAccountCreated(true)
+
+            } catch (err) {
+                if (err.response && err.response.status === 400) {
+                    setError('Email is not valid or already in use. Try another one.');
+                } else {
+                    setError('An error occurred. Please try again later.');
+                }
+            }
+
+        } else {
+            setError('Passwords must match!')
         }
 
     }
@@ -78,6 +91,7 @@ const Signup = ({signup, isAuthenticated}) => {
                             required
                         />
                     </div>
+                    {error && <p className={base_styles.error_message}>{error}</p>}
                     <button type='submit'>Register</button>
                 </form>
                 <p>

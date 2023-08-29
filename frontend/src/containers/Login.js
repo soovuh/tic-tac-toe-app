@@ -56,7 +56,7 @@ const Login = ({login, isAuthenticated}) => {
                             required
                         />
                     </div>
-                    {error && <p className={styles.error_message}>{error}</p>}
+                    {error && <p className={base_styles.error_message}>{error}</p>}
                     <button type='submit'>Login</button>
                 </form>
                 <p>

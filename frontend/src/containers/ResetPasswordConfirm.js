@@ -7,6 +7,7 @@ import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 
 const ResetPasswordConfirm = ({reset_password_confirm}) => {
+    const [error, setError] = useState('');
     const [requestSent, setRequestSent] = useState(false);
     const [formData, setFormData] = useState({
         new_password: '',
@@ -18,10 +19,22 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
     const onChange = e => setFormData({...formData, [e.target.name]: e.target.value});
     const {uid, token} = useParams();
 
-    const onSubmit = e => {
+    const onSubmit = async e => {
         e.preventDefault();
-        reset_password_confirm(uid, token, new_password, re_new_password);
-        setRequestSent(true);
+        if (new_password === re_new_password) {
+            try {
+                await reset_password_confirm(uid, token, new_password, re_new_password);
+                setRequestSent(true);
+            } catch (err) {
+                if (err.response && err.response.status === 400) {
+                    setError('An error occurred. Please try again later');
+                } else {
+                    setError('An error occurred. Please try again later.');
+                }
+            }
+        } else {
+            setError('Passwords must match!')
+        }
     };
 
     if (requestSent) {
@@ -55,6 +68,7 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
                             required
                         />
                     </div>
+                    {error && <p className={base_styles.error_message}>{error}</p>}
                     <button type='submit'>Reset Password</button>
                 </form>
             </div>

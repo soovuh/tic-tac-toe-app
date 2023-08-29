@@ -70,11 +70,6 @@ p a {
     text-decoration: none;
 }
 
-.error_message {
-    color: red;
-    font-size: 14px;
-    margin: 5px 0;
-}
 
 p a:hover {
     text-decoration: underline;
