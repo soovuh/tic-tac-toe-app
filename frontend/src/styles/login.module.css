@@ -24,7 +24,7 @@ form{
 form div {
     width: 100%;
 }
-
+button,
 form button {
     background-color: #980505;
     border-radius: 40px;
@@ -44,7 +44,8 @@ form button:hover {
 }
 
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="text"]{
     width: 100%;
     display: flex;
     padding: 10px;
