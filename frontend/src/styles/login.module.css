@@ -24,7 +24,7 @@ form{
 form div {
     width: 100%;
 }
-
+button,
 form button {
     background-color: #980505;
     border-radius: 40px;
