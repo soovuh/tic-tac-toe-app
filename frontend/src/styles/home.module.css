@@ -21,7 +21,8 @@
     margin-bottom: 20px;
 }
 
-.login_btn {
+.login_btn,
+.play_btn {
     display: inline-block; /* Removed flex display */
     background-color: #980505;
     padding: 15px 40px;
@@ -31,7 +32,8 @@
     transition: background-color 0.3s, color 0.2s;
 }
 
-.login_btn:hover {
+.login_btn:hover,
+.play_btn:hover {
     background-color: #fff;
     color: black;
 }
