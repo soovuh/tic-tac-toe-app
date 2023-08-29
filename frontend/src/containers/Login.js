@@ -6,19 +6,28 @@ import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 
 const Login = ({login, isAuthenticated}) => {
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     })
     const {email, password} = formData;
     const onChange = e => setFormData({...formData, [e.target.name]: e.target.value})
-    const onSubmit = e => {
+    const onSubmit = async e => {
         e.preventDefault();
-        login(email, password)
-    }
+        try {
+            await login(email, password);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                setError('Invalid credentials. Please check your email and password.');
+            } else {
+                setError('An error occurred. Please try again later.');
+            }
+        }
+    };
 
     if (isAuthenticated) {
-        return <Navigate to='/profile' />
+        return <Navigate to='/profile'/>
     }
 
     return (
@@ -47,6 +56,7 @@ const Login = ({login, isAuthenticated}) => {
                             required
                         />
                     </div>
+                    {error && <p className={styles.error_message}>{error}</p>}
                     <button type='submit'>Login</button>
                 </form>
                 <p>

@@ -99,7 +99,8 @@ export const login = (email, password) => async dispatch => {
     } catch (err) {
         dispatch({
             type: LOGIN_FAIL,
-        })
+        });
+        throw err;
 
     }
 };
