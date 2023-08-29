@@ -124,6 +124,7 @@ export const signup = (name, email, password, re_password) => async dispatch => 
         dispatch({
             type: SIGNUP_FAIL,
         })
+        throw err;
 
     }
 };
@@ -146,6 +147,7 @@ export const verify = (uid, token) => async dispatch => {
         dispatch({
             type: ACTIVATION_FAIL,
         })
+        throw err;
 
     }
 }
@@ -168,13 +170,14 @@ export const reset_password = (email) => async dispatch => {
         dispatch({
             type: PASSWORD_RESET_FAIL
         })
+        throw err;
     }
 }
 
 export const reset_password_confirm = (uid, token, new_password, re_new_password) => async dispatch => {
     const config = {
         headers: {
-            'Content-Type': 'applictaion/json'
+            'Content-Type': 'application/json'
         }
     }
     const body = JSON.stringify({uid, token, new_password, re_new_password});
@@ -188,6 +191,7 @@ export const reset_password_confirm = (uid, token, new_password, re_new_password
         dispatch({
             type: PASSWORD_RESET_CONFIRM_FAIL
         })
+        throw err;
     }
 
 };

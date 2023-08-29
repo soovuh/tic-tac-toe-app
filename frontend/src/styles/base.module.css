@@ -188,6 +188,12 @@
     color: black;
 }
 
+.error_message {
+    color: red;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
 @media (max-width: 800px) {
 
     .nav-link {
