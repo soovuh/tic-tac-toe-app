@@ -44,7 +44,8 @@ form button:hover {
 }
 
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="text"]{
     width: 100%;
     display: flex;
     padding: 10px;
