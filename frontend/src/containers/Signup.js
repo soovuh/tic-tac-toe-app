@@ -1,11 +1,13 @@
 import React, {useState} from "react";
-import {Link, Navigate} from 'react-router-dom'
+import {Link, Navigate, useNavigate} from 'react-router-dom'
 import {connect} from "react-redux";
 import {signup} from "../actions/auth";
 import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Signup = ({signup, isAuthenticated}) => {
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [accountCreated, setAccountCreated] = useState(false)
     const [formData, setFormData] = useState({
@@ -20,8 +22,10 @@ const Signup = ({signup, isAuthenticated}) => {
         e.preventDefault();
         if (password === re_password) {
             try {
+                setError("");
+                setLoading(true);
                 await signup(name, email, password, re_password);
-                setAccountCreated(true)
+                setAccountCreated(true);
 
             } catch (err) {
                 if (err.response && err.response.status === 400) {
@@ -29,6 +33,8 @@ const Signup = ({signup, isAuthenticated}) => {
                 } else {
                     setError('An error occurred. Please try again later.');
                 }
+            } finally {
+                setLoading(false)
             }
 
         } else {
@@ -37,11 +43,25 @@ const Signup = ({signup, isAuthenticated}) => {
 
     }
 
+    const navigate = useNavigate()
+    const changePage = () => {
+        navigate("/")
+    }
     if (isAuthenticated) {
         return <Navigate to='/profile'/>
     }
+
     if (accountCreated) {
-        return <Navigate to={'/login/'}/>
+        return (
+            <div className={base_styles.wrapper}>
+                <div className={styles.signin_wrapper}>
+                    <h1>Check your email!</h1>
+                    <form onSubmit={() => changePage()}>
+                        <button type={"submit"}>Ok</button>
+                    </form>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -92,7 +112,11 @@ const Signup = ({signup, isAuthenticated}) => {
                         />
                     </div>
                     {error && <p className={base_styles.error_message}>{error}</p>}
-                    <button type='submit'>Register</button>
+                    {loading ? (
+                        <LoadingSpinner/>
+                    ) : (
+                        <button type='submit'>Register</button>
+                    )}
                 </form>
                 <p>
                     Already have an account? <Link to='/login'>Sign In</Link>
