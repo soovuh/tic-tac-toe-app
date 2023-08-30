@@ -1,11 +1,13 @@
 import React, {useState} from "react";
-import {Navigate} from 'react-router-dom'
+import {Navigate, useNavigate} from 'react-router-dom'
 import {connect} from "react-redux";
 import {reset_password} from "../actions/auth";
 import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const ResetPassword = ({reset_password}) => {
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [requestSent, setRequestSent] = useState(false);
     const [formData, setFormData] = useState({
@@ -16,6 +18,8 @@ const ResetPassword = ({reset_password}) => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
+            setLoading(true);
+            setError("");
             await reset_password(email);
             setRequestSent(true);
         } catch (err) {
@@ -24,12 +28,27 @@ const ResetPassword = ({reset_password}) => {
             } else {
                 setError('An error occurred. Please try again later.');
             }
+        } finally {
+            setLoading(false)
         }
 
     }
+    const navigate = useNavigate()
+    const changePage = (e) => {
+        navigate("/")
+    }
 
     if (requestSent) {
-        return <Navigate to='/'/>
+        return (
+            <div className={base_styles.wrapper}>
+                <div className={styles.signin_wrapper}>
+                    <h1>Check your email!</h1>
+                    <form onSubmit={() => changePage()}>
+                        <button type={"submit"}>Ok</button>
+                    </form>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -48,7 +67,11 @@ const ResetPassword = ({reset_password}) => {
                         />
                     </div>
                     {error && <p className={base_styles.error_message}>{error}</p>}
-                    <button type='submit'>Reset Password</button>
+                    {loading ? (
+                        <LoadingSpinner/>
+                    ) : (
+                        <button type='submit'>Reset Password</button>
+                    )}
                 </form>
             </div>
         </div>

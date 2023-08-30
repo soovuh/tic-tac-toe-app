@@ -5,8 +5,10 @@ import {reset_password_confirm} from "../actions/auth";
 
 import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const ResetPasswordConfirm = ({reset_password_confirm}) => {
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [requestSent, setRequestSent] = useState(false);
     const [formData, setFormData] = useState({
@@ -23,6 +25,8 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
         e.preventDefault();
         if (new_password === re_new_password) {
             try {
+                setLoading(true);
+                setError("");
                 await reset_password_confirm(uid, token, new_password, re_new_password);
                 setRequestSent(true);
             } catch (err) {
@@ -31,6 +35,8 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
                 } else {
                     setError('An error occurred. Please try again later.');
                 }
+            } finally {
+                setLoading(false);
             }
         } else {
             setError('Passwords must match!')
@@ -69,7 +75,12 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
                         />
                     </div>
                     {error && <p className={base_styles.error_message}>{error}</p>}
-                    <button type='submit'>Reset Password</button>
+                    {loading ? (
+                        <LoadingSpinner/>
+                    ) : (
+                        <button type='submit'>Reset Password</button>
+                    )}
+
                 </form>
             </div>
         </div>

@@ -4,8 +4,10 @@ import {connect} from "react-redux";
 import {login} from "../actions/auth";
 import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Login = ({login, isAuthenticated}) => {
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         email: '',
@@ -16,6 +18,8 @@ const Login = ({login, isAuthenticated}) => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
+            setLoading(true);
+            setError("");
             await login(email, password);
         } catch (err) {
             if (err.response && err.response.status === 401) {
@@ -23,6 +27,8 @@ const Login = ({login, isAuthenticated}) => {
             } else {
                 setError('An error occurred. Please try again later.');
             }
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -57,7 +63,12 @@ const Login = ({login, isAuthenticated}) => {
                         />
                     </div>
                     {error && <p className={base_styles.error_message}>{error}</p>}
-                    <button type='submit'>Login</button>
+                                    {loading ? (
+                    <LoadingSpinner/>
+                ) : (
+                    <button type="submit">Login</button>
+                )}
+                    {/*<button type='submit'>Login</button>*/}
                 </form>
                 <p>
                     Don`t have an account? <Link to='/signup'>Sign up</Link>
