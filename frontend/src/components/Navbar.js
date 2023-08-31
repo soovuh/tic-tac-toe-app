@@ -47,8 +47,12 @@ const Navbar = ({logout, isAuthenticated}) => {
                         <Link className={base_styles["nav-link"]} to='/login'>Log In</Link>}
                     {isAuthenticated &&
                         <Link className={base_styles["nav-link"]} to='/profile'>Profile</Link>}
+                    {isAuthenticated &&
+                        <Link className={base_styles["nav-link"]} to="/login" onClick={logout}>Logout</Link>
+                    }
                     {!isAuthenticated && <Link className={base_styles["play-button"]} to="/login">Play</Link>}
                     {isAuthenticated && <Link className={base_styles["play-button"]} to="/lobby">Play</Link>}
+
                 </nav>
             }
         </>
