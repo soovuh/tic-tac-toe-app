@@ -1,3 +1,4 @@
+import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from rest_framework.authtoken.models import Token
@@ -6,6 +7,9 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+searching_users = []
+waiting_users = []
+
 
 class LobbyConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -13,71 +17,43 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
+        action = data.get("action")
         user_id = data.get("user_id")
-        user = await self.get_user(user_id)
-        await self.send(text_data=json.dumps({
-            'event': 'match_found',
-            'opponent': 'Enemy',
-        }))
+        self.user = await self.get_user(user_id)
+        if action == 'searching':
+            searching_users.append(self)
+            if len(searching_users) >= 2:
+                await self.match_users()
+            else:
+                await self.wait_for_match()
+
+    async def wait_for_match(self):
+        waiting_users.append(self)
+        while len(searching_users) < 2 and self in waiting_users:
+            await asyncio.sleep(2)  # Adjust the sleep interval as needed
+
+        if self in waiting_users:
+            waiting_users.remove(self)
+            await self.match_users()
+
+    async def match_users(self):
+        if len(searching_users) >= 2:
+            opponent1 = searching_users.pop(0)
+            opponent2 = searching_users.pop(0)
+
+            opponent1_id = opponent1.user.id
+            opponent2_id = opponent2.user.id
+
+            await opponent1.send(text_data=json.dumps({
+                'event': 'match_found',
+                'opponent': {'id': opponent2_id, 'name': opponent2.user.name},
+            }))
+            await opponent2.send(text_data=json.dumps({
+                'event': 'match_found',
+                'opponent': {'id': opponent1_id, 'name': opponent1.user.name},
+            }))
 
     @database_sync_to_async
     def get_user(self, user_id):
         user = User.objects.get(id=user_id)
         return user
-
-
-'''
-    class ChatConsumer(AsyncWebsocketConsumer):
-        async def connect(self):
-            self.room_group_name = 'chat'
-            await self.channel_layer.group_add(
-                self.room_group_name,
-                self.channel_name
-            )
-            await self.accept()
-    
-        async def disconnect(self, close_code):
-            await self.channel_layer.group_discard(
-                self.room_group_name,
-                self.channel_name
-            )
-    
-        @database_sync_to_async
-        def create_message(self, message, username):
-            message_obj = Message.objects.create(
-                content=message,
-                username=username
-            )
-            return message_obj
-    
-        async def receive(self, text_data):
-            data = json.loads(text_data)
-            message = data['message']
-            username = data['username']
-    
-            # Create a new message object and save it to the database
-            message_obj = await self.create_message(message, username)
-    
-            # Send the message to the group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': message_obj.content,
-                    'username': message_obj.username,
-                    'timestamp': str(message_obj.timestamp)
-                }
-            )
-    
-        async def chat_message(self, event):
-            message = event['message']
-            username = event['username']
-            timestamp = event['timestamp']
-    
-            # Send the message to the websocket
-            await self.send(text_data=json.dumps({
-                'message': message,
-                'username': username,
-                'timestamp': timestamp
-            }))
-'''
