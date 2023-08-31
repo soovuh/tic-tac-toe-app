@@ -7,6 +7,7 @@ import Login from "./containers/Login";
 import Activate from "./containers/Activate";
 import ResetPassword from "./containers/ResetPassword";
 import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
+import Lobby from "./containers/Lobby";
 import Layout from "./hocs/Layout";
 
 import {Provider} from "react-redux";
@@ -18,6 +19,7 @@ const App = () => (
             <Layout>
                 <Routes>
                     <Route path='/' element={<Home/>}/>
+                    <Route path='/lobby' element={<Lobby/>}/>
                     <Route path='/signup' element={<Signup/>}/>
                     <Route path='/login' element={<Login/>}/>
                     <Route path='/activate/:uid/:token' element={<Activate/>}/>
