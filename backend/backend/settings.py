@@ -137,6 +137,7 @@ SIMPLE_JWT = {
 
 # DJOSER setup
 DJOSER = {
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
