@@ -6,7 +6,7 @@ import base_styles from "../styles/base.module.css"
 import styles from "../styles/login.module.css"
 import LoadingSpinner from "../components/LoadingSpinner";
 
-const ResetPassword = ({reset_password}) => {
+const ResetPassword = ({reset_password, isAuthenticated, isLoading}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [requestSent, setRequestSent] = useState(false);
@@ -50,32 +50,47 @@ const ResetPassword = ({reset_password}) => {
             </div>
         )
     }
-
-    return (
-        <div className={base_styles.wrapper}>
-            <div className={styles.signin_wrapper}>
-                <h1>Enter your email</h1>
-                <form onSubmit={e => onSubmit(e)}>
-                    <div>
-                        <input
-                            type="email"
-                            placeholder='Email'
-                            name='email'
-                            value={email}
-                            onChange={e => onChange(e)}
-                            required
-                        />
-                    </div>
-                    {error && <p className={base_styles.error_message}>{error}</p>}
-                    {loading ? (
-                        <LoadingSpinner/>
-                    ) : (
-                        <button type='submit'>Reset Password</button>
-                    )}
-                </form>
+    if (isAuthenticated && !isLoading) {
+        return <Navigate to={"/profile"}/>
+    } else if (!isAuthenticated && !isLoading) {
+        return (
+            <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>
+                <div className={styles.signin_wrapper}>
+                    <h1>Enter your email</h1>
+                    <form onSubmit={e => onSubmit(e)}>
+                        <div>
+                            <input
+                                type="email"
+                                placeholder='Email'
+                                name='email'
+                                value={email}
+                                onChange={e => onChange(e)}
+                                required
+                            />
+                        </div>
+                        {error && <p className={base_styles.error_message}>{error}</p>}
+                        {loading ? (
+                            <LoadingSpinner/>
+                        ) : (
+                            <button type='submit'>Reset Password</button>
+                        )}
+                    </form>
+                </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return (
+            <div className={base_styles.wrapper}>
+
+            </div>
+        )
+    }
 }
 
-export default connect(null, {reset_password})(ResetPassword);
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated,
+    isLoading: state.auth.isLoading
+})
+
+
+export default connect(mapStateToProps, {reset_password})(ResetPassword);

@@ -14,7 +14,7 @@ import {
     SIGNUP_SUCCESS,
     SIGNUP_FAIL,
     ACTIVATION_SUCCESS,
-    ACTIVATION_FAIL,
+    ACTIVATION_FAIL, LOADING, LOADING_FINISH,
 } from './types'
 
 export const checkAuthenticated = () => async dispatch => {
@@ -52,6 +52,9 @@ export const checkAuthenticated = () => async dispatch => {
 };
 
 export const load_user = () => async dispatch => {
+    dispatch({
+        type: LOADING,
+    });
     if (localStorage.getItem('access')) {
         const config = {
             headers: {
@@ -78,6 +81,9 @@ export const load_user = () => async dispatch => {
             type: USER_LOADED_FAIL
         })
     }
+    dispatch({
+        type: LOADING_FINISH,
+    });
 };
 
 export const login = (email, password) => async dispatch => {

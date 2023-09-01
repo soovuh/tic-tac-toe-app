@@ -14,18 +14,30 @@ import {
     SIGNUP_FAIL,
     ACTIVATION_SUCCESS,
     ACTIVATION_FAIL,
+    LOADING, LOADING_FINISH,
 } from '../actions/types'
 
 const initialState = {
     access: localStorage.getItem('access'),
     refresh: localStorage.getItem('refresh'),
     isAuthenticated: null,
+    isLoading: true,
     user: null,
 };
 
 export default function (state = initialState, action) {
     const {type, payload} = action;
     switch (type) {
+        case LOADING:
+            return {
+                ...state,
+                isLoading: true,
+            }
+        case LOADING_FINISH:
+            return {
+                ...state,
+                isLoading: false,
+            }
         case AUTHENTICATED_SUCCESS:
             return {
                 ...state,

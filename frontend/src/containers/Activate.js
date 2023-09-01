@@ -32,7 +32,7 @@ const Activate = ({verify}) => {
     }
 
     return (
-        <div className={base_styles.wrapper}>
+        <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>
             <div className={styles.signin_wrapper}>
                 <h1>Verify your account</h1>
                 {error && <p className={base_styles.error_message}>{error}</p>}

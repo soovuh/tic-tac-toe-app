@@ -48,7 +48,7 @@ const ResetPasswordConfirm = ({reset_password_confirm}) => {
     }
 
     return (
-        <div className={base_styles.wrapper}>
+        <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>
             <div className={styles.signin_wrapper}>
                 <h1>Reset password</h1>
                 <form onSubmit={e => onSubmit(e)}>
