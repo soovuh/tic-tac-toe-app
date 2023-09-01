@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {Link, Navigate, useNavigate} from "react-router-dom";
 import base_styles from "../styles/base.module.css";
 import styles from "../styles/login.module.css";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Lobby = ({isAuthenticated, isLoading, user}) => {
     const navigate = useNavigate();
@@ -28,9 +29,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
                     console.log('Match found with opponent:', data.opponent);
                     setIsSearching(false);
                     setOpponent(data.opponent);
-                } else if (data.event === "waiting") {
-                    setIsSearching(true);
-                    setOpponent(null);
+                    newSocket.close()
                 }
             };
             newSocket.onclose = () => {
@@ -54,6 +53,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             <div className={base_styles.wrapper}>
                 <div className={styles.signin_wrapper}>
                     <h1>Searching for opponents...</h1>
+                    <LoadingSpinner/>
                     <button onClick={stopSearch}>Stop Search</button>
                     <p>
                         Already have an account? <Link to='/login'>Sign In</Link>

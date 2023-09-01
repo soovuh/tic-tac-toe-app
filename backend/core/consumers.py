@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 searching_users = []
+users = []
+
 waiting_users = []
 
 
@@ -20,12 +22,26 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         action = data.get("action")
         user_id = data.get("user_id")
         self.user = await self.get_user(user_id)
-        if action == 'searching':
-            searching_users.append(self)
-            if len(searching_users) >= 2:
-                await self.match_users()
-            else:
-                await self.wait_for_match()
+        if self.user not in users:
+            users.append(self.user)
+            if action == 'searching':
+                searching_users.append(self)
+                if len(searching_users) >= 2:
+                    await self.match_users()
+                else:
+                    await self.wait_for_match()
+        else:
+            await self.close()
+
+    async def disconnect(self, code):
+        print('disconnect')
+        if self.user in users:
+            users.remove(self.user)
+        if self in searching_users:
+            searching_users.remove(self)
+        if self in waiting_users:
+            waiting_users.remove(self)
+
 
     async def wait_for_match(self):
         waiting_users.append(self)
