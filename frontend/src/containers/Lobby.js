@@ -8,12 +8,10 @@ import LoadingSpinner from "../components/LoadingSpinner";
 const Lobby = ({isAuthenticated, isLoading, user}) => {
     const navigate = useNavigate();
     const [isSearching, setIsSearching] = useState(false);
-    const [opponent, setOpponent] = useState(null);
+    const [code, setCode] = useState(null);
     const [socket, setSocket] = useState(null);
 
-    // Function, that open new socket
     const startSearch = () => {
-        // Firstly, we check, if user exists and socket not already started
         if (user && !socket) {
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/search/`);
 
@@ -32,19 +30,16 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             };
             newSocket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
-
-                console.log('Match found:', data.opponent);
+                console.log('Match found:', data.code);
+                setCode(data.code)
                 setIsSearching(false);
-                setOpponent(data.opponent);
-                // newSocket.close();
+
 
             };
             newSocket.onclose = () => {
                 console.log("connection closed");
                 setSocket(null);
                 setIsSearching(false);
-                setOpponent(null);
-
             };
         }
     };
@@ -79,8 +74,8 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
         );
     }
 
-    if (opponent) {
-        return <div>Your opponent is {opponent.name}</div>;
+    if (code) {
+        return <Navigate to={`/game/${code}`}/>
     }
     if (!isAuthenticated && !isLoading) {
         return <Navigate to='/login'/>;
