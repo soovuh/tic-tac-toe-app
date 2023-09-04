@@ -9,8 +9,9 @@
     border-radius: 40px;
 }
 
-h1 {
+h1, h3 {
     margin-bottom: 30px;
+    text-align: center;
 }
 
 form {
@@ -39,7 +40,8 @@ form button {
     margin-bottom: 20px;
 }
 
-form button:hover {
+form button:hover,
+button:hover {
     background-color: #ffffff;
     color: black;
 }
@@ -74,6 +76,7 @@ p a {
 p a:hover {
     text-decoration: underline;
 }
+
 
 @media (max-width: 500px) {
     .signin_wrapper {

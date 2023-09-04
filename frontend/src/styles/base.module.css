@@ -1,7 +1,8 @@
 .navbar {
     width: 100%;
     text-align: center;
-    padding: 20px 20px;
+    padding: 20px;
+    min-height: 84px;
     position: sticky;
     display: flex;
     justify-content: space-between;
@@ -9,9 +10,12 @@
     left: 0;
     background-color: rgba(22, 23, 27, .8);
     z-index: 100;
-    box-shadow: 0 1px rgba(255, 255, 255, .1);
 }
 
+.entrance_anim {
+    animation: navAnim 0.5s linear 0s 1 normal forwards;
+    box-shadow: 0 1px rgba(255, 255, 255, .1);
+}
 
 .left {
     display: flex;
@@ -89,9 +93,9 @@
 .burger-nav {
     width: 100%;
     position: absolute;
-    padding:10px;
+    padding: 10px;
     background-color: rgba(22, 23, 27);
-    box-shadow: 0 1px rgba(255, 255, 255, .1);
+    z-index: 100;
     top: 99.4px;
     display: none;
     flex-direction: column;
@@ -111,6 +115,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    min-height: 87px;
     flex-direction: column;
     z-index: 99;
     user-select: none;
@@ -228,6 +233,7 @@
     .footer .footer_icons ion-icon {
         font-size: 15px;
     }
+
     .footer_link {
         width: 15px;
     }
@@ -236,4 +242,14 @@
         font-size: 0.7em;
     }
 
+}
+
+@keyframes navAnim {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }

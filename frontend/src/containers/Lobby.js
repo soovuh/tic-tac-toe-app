@@ -1,67 +1,106 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import React, {useState} from "react";
+import {connect} from "react-redux";
+import {Link, Navigate, useNavigate} from "react-router-dom";
+import base_styles from "../styles/base.module.css";
+import styles from "../styles/login.module.css";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-const Lobby = ({ isAuthenticated, user }) => {
+const Lobby = ({isAuthenticated, isLoading, user}) => {
     const navigate = useNavigate();
     const [isSearching, setIsSearching] = useState(false);
-    const [opponent, setOpponent] = useState(null);
+    const [code, setCode] = useState(null);
+    const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
-        const socket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/lobby/`);
+    const startSearch = () => {
+        if (user && !socket) {
+            const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/search/`);
 
-        socket.onopen = async () => {
-            console.log("WebSocket connection opened");
-            if (user) {
+            newSocket.onopen = async () => {
+                console.log("Connection opened");
+
                 setIsSearching(true);
+                setSocket(newSocket);
+
                 const data = JSON.stringify({
-                    action: "searching",
+                    action: "search",
                     user_id: user.id,
                 });
-                await socket.send(data);
-            } else {
-                await socket.close();
-                navigate("/login");
-            }
-        };
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.event === "match_found") {
-                console.log('Match found with opponent:', data.opponent);
+                await newSocket.send(data);
+            };
+            newSocket.onmessage = async (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Match found:', data.code);
+                setCode(data.code)
                 setIsSearching(false);
-                setOpponent(data.opponent);
-                // navigate(`/game/${data.opponent.id}`);
-            } else if (data.event === "waiting") {
-                setIsSearching(true);
-                setOpponent(null);
-            }
-        };
 
-        return () => {
-            socket.close();
-        };
-    }, [user]);
 
-    if (!isAuthenticated) {
-        return <Navigate to='/login' />;
-    }
+            };
+            newSocket.onclose = () => {
+                console.log("connection closed");
+                setSocket(null);
+                setIsSearching(false);
+            };
+        }
+    };
+
+
+    const stopSearch = async () => {
+        if (socket) {
+            const data = JSON.stringify({
+                action: 'close',
+                user_id: user.id
+            })
+            console.log("send")
+            await socket.send(data);
+        }
+    };
+
+    window.addEventListener('beforeunload', stopSearch)
+
 
     if (isSearching) {
-        return <div>Searching for opponents...</div>;
+        return (
+            <div className={base_styles.wrapper}>
+                <div className={styles.signin_wrapper}>
+                    <h1>Searching for opponents...</h1>
+                    <LoadingSpinner/>
+                    <button onClick={stopSearch}>Stop Search</button>
+                    <p>
+                        Already have an account? <Link to='/login'>Sign In</Link>
+                    </p>
+                </div>
+            </div>
+        );
     }
 
-    if (opponent) {
-        return <div>Your opponent is {opponent.name}</div>
+    if (code) {
+        return <Navigate to={`/game/${code}`}/>
+    }
+    if (!isAuthenticated && !isLoading) {
+        return <Navigate to='/login'/>;
+    } else if (isAuthenticated && !isLoading) {
+        return (
+            <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>
+                <div className={styles.signin_wrapper}>
+                    <h1>Start searching</h1>
+                    <button onClick={startSearch}>Start Search</button>
+                    <p>
+                        Wanna play with friend? <Link to='/lobby-friend'>Click here</Link>
+                    </p>
+                </div>
+            </div>
+        )
+    } else {
+        return <div className={base_styles.wrapper}></div>
     }
 
-    return <div>Idle...</div>;
 };
 
 const mapStateToProps = (state) => ({
     isAuthenticated: state.auth.isAuthenticated,
+    isLoading: state.auth.isLoading,
     user: state.auth.user,
 });
 
-export default connect(mapStateToProps, {})(Lobby);
-
+export default connect(mapStateToProps, {})(Lobby)
