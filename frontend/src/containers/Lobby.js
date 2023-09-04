@@ -11,7 +11,6 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     const [opponent, setOpponent] = useState(null);
     const [socket, setSocket] = useState(null);
 
-
     // Function, that open new socket
     const startSearch = () => {
         // Firstly, we check, if user exists and socket not already started
@@ -50,6 +49,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
         }
     };
 
+
     const stopSearch = async () => {
         if (socket) {
             const data = JSON.stringify({
@@ -60,6 +60,9 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             await socket.send(data);
         }
     };
+
+    window.addEventListener('beforeunload', stopSearch)
+
 
     if (isSearching) {
         return (

@@ -30,10 +30,12 @@ class SearchConsumer(AsyncWebsocketConsumer):
                 else:
                     asyncio.create_task(self.wait_for_match())
             else:
-                while user_id in users:
-                    users.remove(user_id)
+                # while user_id in users:
+                #     users.remove(user_id)
                 await self.close()
         elif action == 'close':
+            users.remove(user_id)
+            connected_clients.remove(self)
             await self.close()
 
     async def disconnect(self, code):
@@ -41,7 +43,8 @@ class SearchConsumer(AsyncWebsocketConsumer):
 
     async def wait_for_match(self):
         while len(users) < 2:
-            print("work")
+            if len(users) == 0:
+                return
             await asyncio.sleep(2)
         await self.match_users()
 
@@ -56,6 +59,7 @@ class SearchConsumer(AsyncWebsocketConsumer):
         users.remove(opponent1_id)
         users.remove(opponent2_id)
         print(users)
+
 
     @database_sync_to_async
     def get_user(self, user_id):
