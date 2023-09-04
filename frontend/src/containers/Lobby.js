@@ -11,40 +11,53 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     const [opponent, setOpponent] = useState(null);
     const [socket, setSocket] = useState(null);
 
+
+    // Function, that open new socket
     const startSearch = () => {
+        // Firstly, we check, if user exists and socket not already started
         if (user && !socket) {
-            const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/lobby/`);
+            const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/search/`);
+
             newSocket.onopen = async () => {
-                console.log("WebSocket connection opened");
+                console.log("Connection opened");
+
                 setIsSearching(true);
+                setSocket(newSocket);
+
                 const data = JSON.stringify({
-                    action: "searching",
+                    action: "search",
                     user_id: user.id,
                 });
+
                 await newSocket.send(data);
             };
-            newSocket.onmessage = (event) => {
+            newSocket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
-                if (data.event === "match_found") {
-                    console.log('Match found with opponent:', data.opponent);
-                    setIsSearching(false);
-                    setOpponent(data.opponent);
-                    newSocket.close()
-                }
+
+                console.log('Match found:', data.opponent);
+                setIsSearching(false);
+                setOpponent(data.opponent);
+                // newSocket.close();
+
             };
             newSocket.onclose = () => {
-                console.log("WebSocket connection closed");
+                console.log("connection closed");
                 setSocket(null);
                 setIsSearching(false);
                 setOpponent(null);
+
             };
-            setSocket(newSocket);
         }
     };
 
-    const stopSearch = () => {
+    const stopSearch = async () => {
         if (socket) {
-            socket.close();
+            const data = JSON.stringify({
+                action: 'close',
+                user_id: user.id
+            })
+            console.log("send")
+            await socket.send(data);
         }
     };
 
