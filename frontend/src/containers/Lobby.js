@@ -66,9 +66,6 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
                     <h1>Searching for opponents...</h1>
                     <LoadingSpinner/>
                     <button onClick={stopSearch}>Stop Search</button>
-                    <p>
-                        Already have an account? <Link to='/login'>Sign In</Link>
-                    </p>
                 </div>
             </div>
         );
