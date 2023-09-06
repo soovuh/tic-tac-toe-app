@@ -8,6 +8,7 @@ import Activate from "./containers/Activate";
 import ResetPassword from "./containers/ResetPassword";
 import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
 import Lobby from "./containers/Lobby";
+import Game from "./containers/Game";
 import Layout from "./hocs/Layout";
 
 import {Provider} from "react-redux";
@@ -25,6 +26,7 @@ const App = () => (
                     <Route path='/activate/:uid/:token' element={<Activate/>}/>
                     <Route path='/reset-password' element={<ResetPassword/>}/>
                     <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
+                    <Route path='/game/:game_code' element={<Game/>} />
                 </Routes>
             </Layout>
         </Router>
