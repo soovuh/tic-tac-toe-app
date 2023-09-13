@@ -87,34 +87,6 @@ export const load_user = () => async dispatch => {
 };
 
 
-export const check_game = (game_code, uid) => async dispatch => {
-    dispatch({
-        type: LOADING,
-    });
-    if (localStorage.getItem('access')) {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `JWT ${localStorage.getItem('access')}`,
-                'Accept': 'application/json'
-            }
-        };
-        const body = JSON.stringify({game_code, uid});
-        try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/game/check_game/`, body, config)
-            return res.data
-
-        } catch (err) {
-            throw err
-
-        }
-    } else {
-        dispatch({
-            type: LOADING_FINISH,
-        });
-        return {isPlayer: false}
-    }
-};
 
 export const login = (email, password) => async dispatch => {
     const config = {
