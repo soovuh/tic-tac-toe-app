@@ -1,12 +1,11 @@
 import React, {useState} from "react";
 import {connect} from "react-redux";
-import {Link, Navigate, useNavigate} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 import base_styles from "../styles/base.module.css";
 import styles from "../styles/login.module.css";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Lobby = ({isAuthenticated, isLoading, user}) => {
-    const navigate = useNavigate();
     const [isSearching, setIsSearching] = useState(false);
     const [code, setCode] = useState(null);
     const [socket, setSocket] = useState(null);
@@ -72,7 +71,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     }
 
     if (code) {
-        return <Navigate to={`/game/${code}`}/>
+        return <Navigate to={`/game/${code}/${user.id}`}/>
     }
     if (!isAuthenticated && !isLoading) {
         return <Navigate to='/login'/>;
