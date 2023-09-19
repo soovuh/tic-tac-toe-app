@@ -25,8 +25,39 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
-        uid = data.get('uid')
         action = data.get('action')
-        game_code = data.get('game_code')
-        player = data.get('player')
-        print(action, uid, game_code, player)
+        if action == 'start':
+            await self.channel_layer.group_send(
+                self.game_group_code,
+                {
+                    'type': 'game_start',
+                }
+            )
+        if action == 'turn':
+            player = data.get('player')
+            cell = data.get('cell')
+            print(player)
+            await self.channel_layer.group_send(
+                self.game_group_code,
+                {
+                    'type': 'game_turn',
+                    'player': player,
+                    'cell': int(cell),
+                }
+            )
+
+
+    async def game_turn(self, event):
+        player = event['player']
+        cell = event['cell']
+
+        await self.send(text_data=json.dumps({
+            'action': 'turn',
+            'player': player,
+            'cell': cell,
+        }))
+
+    async def game_start(self, event):
+        await self.send(text_data=json.dumps({
+            'action': 'start',
+        }))

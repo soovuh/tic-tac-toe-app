@@ -1,0 +1,35 @@
+.tic-tac-toe {
+    display: inline-block;
+    border: 2px solid #333;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: #eee;
+}
+
+
+.x {
+    color: #e74c3c;
+}
+
+.o {
+    color: #3498db;
+}
