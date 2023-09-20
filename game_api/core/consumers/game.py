@@ -16,7 +16,6 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_code = self.scope['url_route']['kwargs']['game_code']
         self.game_group_code = 'GAME_' + self.game_code
-        print(self.game_group_code)
         await self.channel_layer.group_add(
             self.game_group_code,
             self.channel_name
@@ -47,6 +46,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if action == 'win':
             player = data.get('player')
             uid = data.get('uid')
+            await self.game_over(player)
             await self.channel_layer.group_send(
                 self.game_group_code,
                 {
@@ -56,6 +56,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
         if action == 'draw':
+            await self.game_over('n')
             await self.channel_layer.group_send(
                 self.game_group_code,
                 {
@@ -68,6 +69,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'action': 'draw'
         }))
 
+
     async def game_win(self, event):
         player = event['player']
         uid = event['uid']
@@ -77,6 +79,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'player': player,
             'uid': uid,
         }))
+
 
     async def game_turn(self, event):
         player = event['player']
@@ -92,3 +95,30 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'action': 'start',
         }))
+
+    @database_sync_to_async
+    def game_over(self, winner):
+        game = Game.objects.get(game_code=self.game_code)
+        if game.is_friend_game:
+            game.winner = winner
+            game.is_over = True
+            game.save()
+            return
+        if game.is_over:
+            return
+        game.is_over = True
+        game.winner = winner
+        game.save()
+        uxid = game.x_player_id
+        uoid = game.o_player_id
+        user_x = User.objects.get(id=uxid)
+        user_o = User.objects.get(id=uoid)
+        user_x.games += 1
+        user_o.games += 1
+        if winner == 'x':
+            user_x.wins += 1
+        elif winner == 'o':
+            user_o.wins += 1
+        user_x.save()
+        user_o.save()
+

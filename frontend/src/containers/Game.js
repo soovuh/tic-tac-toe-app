@@ -19,6 +19,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const [isWin, setIsWin] = useState(null)
     const [isEnd, setIsEnd] = useState(false)
     const [isDraw, setIsDraw] = useState(false)
+    const [yourTurn, setTurn] = useState(false)
     const navigate = useNavigate()
     const checkGame = async () => {
         try {
@@ -78,8 +79,6 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/game/${game_code}/`);
 
             newSocket.onopen = async () => {
-                console.log("Connection opened");
-
                 setSocket(newSocket)
 
 
@@ -103,11 +102,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     setGame(true);
                     if (player === 'x') {
                         turn = true
+                        setTurn(true)
 
                     }
                     if (player === 'o') {
                         turn = false
-
+                        setTurn(false)
                     }
                 } else if (data.action === 'turn') {
                     if (!cellsArr[data.cell]) {
@@ -128,6 +128,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
 
                         setCell(data.player)
                         turn = !turn;
+                        setTurn(turn)
                     }
                 } else if (data.action === 'win') {
                     turn = false
@@ -136,15 +137,16 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     } else if (data.player !== player) {
                         gameEnd(false)
                     }
+                    await newSocket.close()
 
                 } else if (data.action === 'draw') {
                     turn = false
                     gameDraw()
+                    await newSocket.close()
                 }
             };
 
             newSocket.onclose = () => {
-                console.log("connection closed");
                 setSocket(null);
             };
             newSocket.doTurn = async (event) => {
@@ -166,6 +168,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     player: player,
                     uid: uid,
                 })
+
                 await newSocket.send(data)
             }
 
@@ -182,12 +185,14 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const gameEnd = (win) => {
         setIsEnd(true)
         setIsWin(win)
+        setGame(false)
         localStorage.removeItem(game_code)
     }
 
     const gameDraw = () => {
         setIsEnd(true)
         setIsDraw(true)
+        setGame(false)
         localStorage.removeItem(game_code)
     }
 
@@ -205,36 +210,43 @@ const Game = ({isAuthenticated, isLoading, user}) => {
 
     }
 
-    if (isLoading) {
-        return (
-            <div className={base_styles.wrapper}>
-                <LoadingSpinner/>
-            </div>
-        )
-    } else if (player === "n" || !isAuthenticated) {
+
+    if (player === "n" || !isAuthenticated) {
         if (!isLoading)
             return <Navigate to='/'/>
     } else if (!isLoading && player && socket && game) {
         return (
             <div className={base_styles.wrapper}>
-                <div>
-                    {isEnd}
-                    <div className={game_styles.row} id={cell}>
-                        <div id='0' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[0]}</div>
-                        <div id='1' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[1]}</div>
-                        <div id='2' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[2]}</div>
+                <div className={game_styles.game_container}>
+                    <div className={game_styles.turn} style={{color: yourTurn ? '#fff' : '#d20606'}}>
+                        {yourTurn && "Your turn"}
+                        {!yourTurn && 'Enemy turn'}
                     </div>
-                    <div className={game_styles.row}>
-                        <div id='3' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[3]}</div>
-                        <div id='4' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[4]}</div>
-                        <div id='5' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[5]}</div>
-                    </div>
-                    <div className={game_styles.row}>
-                        <div id='6' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[6]}</div>
-                        <div id='7' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[7]}</div>
-                        <div id='8' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[8]}</div>
+                    <div className={game_styles['tic-tac-toe']}>
+                        <div className={game_styles.row} id={cell}>
+                            <div id='0' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[0]}</div>
+                            <div id='1' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[1]}</div>
+                            <div id='2' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[2]}</div>
+                        </div>
+                        <div className={game_styles.row}>
+                            <div id='3' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[3]}</div>
+                            <div id='4' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[4]}</div>
+                            <div id='5' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[5]}</div>
+                        </div>
+                        <div className={game_styles.row}>
+                            <div id='6' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[6]}</div>
+                            <div id='7' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[7]}</div>
+                            <div id='8' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[8]}</div>
+                        </div>
                     </div>
                 </div>
+
+            </div>
+        )
+    } else {
+        return (
+            <div className={base_styles.wrapper}>
+                <LoadingSpinner/>
             </div>
         )
     }

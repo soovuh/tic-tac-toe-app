@@ -5,6 +5,21 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
+.game_container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.turn {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+    transition: color .2s;
+}
+
 .row {
     display: flex;
 }
@@ -23,13 +38,4 @@
 
 .cell:hover {
     background-color: #eee;
-}
-
-
-.x {
-    color: #e74c3c;
-}
-
-.o {
-    color: #3498db;
 }

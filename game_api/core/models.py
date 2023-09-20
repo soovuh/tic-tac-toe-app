@@ -21,6 +21,8 @@ class Game(models.Model):
     x_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='x_games')
     o_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='o_games')
     is_over = models.BooleanField(default=False)
+    winner = models.CharField(default='n', max_length=1)
+    is_friend_game = models.BooleanField(default=False)
 
 
     def __str__(self):

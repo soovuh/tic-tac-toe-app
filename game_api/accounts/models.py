@@ -37,6 +37,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    games = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
 
     objects = UserAccountManager()
 
