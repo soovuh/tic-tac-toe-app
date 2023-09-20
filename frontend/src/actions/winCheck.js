@@ -6,6 +6,7 @@ const checkForWin = (cells, player) => {
   ];
   for (const condition of winConditions) {
     const [a, b, c] = condition;
+
     if (cells[a] === player && cells[b] === player && cells[c] === player) {
       return true;
     }

@@ -6,6 +6,7 @@ import base_styles from "../styles/base.module.css";
 import game_styles from '../styles/game.module.css'
 import checkForWin from "../actions/winCheck";
 import LoadingSpinner from "../components/LoadingSpinner";
+import drawCheck from "../actions/drawCheck";
 
 const Game = ({isAuthenticated, isLoading, user}) => {
     const {game_code, uid} = useParams();
@@ -15,6 +16,9 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const [game, setGame] = useState(null);
     const [cellsArr, setCellsArr] = useState(['', '', '', '', '', '', '', '', ''])
     const [cell, setCell] = useState('')
+    const [isWin, setIsWin] = useState(null)
+    const [isEnd, setIsEnd] = useState(false)
+    const [isDraw, setIsDraw] = useState(false)
     const navigate = useNavigate()
     const checkGame = async () => {
         try {
@@ -49,6 +53,25 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     }, [isLoading, isAuthenticated, data]);
 
     useEffect(() => {
+        if (isWin && socket) {
+            const asyncFunc = async () => {
+                await socket.sendWin()
+            }
+            asyncFunc()
+        }
+
+    })
+
+    useEffect(() => {
+        if (isDraw && socket) {
+            const asyncFunc = async () => {
+                await socket.sendDraw()
+            }
+            asyncFunc()
+        }
+    })
+
+    useEffect(() => {
         let turn = false
         if (!socket && player && game === null) {
 
@@ -75,7 +98,6 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                 const data = JSON.parse(event.data);
                 if (data.action === 'start') {
                     if (localStorage.getItem(game_code)) {
-                        console.log(localStorage.getItem(game_code))
                         setCellsArr(JSON.parse(localStorage.getItem(game_code)))
                     }
                     setGame(true);
@@ -93,11 +115,31 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                             const newState = prevState
                             newState[data.cell] = data.player
                             localStorage.setItem(game_code, JSON.stringify(newState))
+                            const isDraw = drawCheck(newState)
+                            if (isDraw) {
+                                setIsDraw(true)
+                            }
+                            const isWin = checkForWin(cellsArr, player)
+                            if (isWin) {
+                                setIsWin(true)
+                            }
                             return newState
                         })
+
                         setCell(data.player)
                         turn = !turn;
                     }
+                } else if (data.action === 'win') {
+                    turn = false
+                    if (data.player === player) {
+                        gameEnd(true)
+                    } else if (data.player !== player) {
+                        gameEnd(false)
+                    }
+
+                } else if (data.action === 'draw') {
+                    turn = false
+                    gameDraw()
                 }
             };
 
@@ -118,9 +160,50 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                 }
             }
 
+            newSocket.sendWin = async () => {
+                const data = JSON.stringify({
+                    action: 'win',
+                    player: player,
+                    uid: uid,
+                })
+                await newSocket.send(data)
+            }
+
+            newSocket.sendDraw = async () => {
+                const data = JSON.stringify({
+                    action: 'draw'
+                })
+                await newSocket.send(data)
+            }
+
         }
     }, [socket, player, game, uid, game_code]);
 
+    const gameEnd = (win) => {
+        setIsEnd(true)
+        setIsWin(win)
+        localStorage.removeItem(game_code)
+    }
+
+    const gameDraw = () => {
+        setIsEnd(true)
+        setIsDraw(true)
+        localStorage.removeItem(game_code)
+    }
+
+    if (isEnd) {
+        if (isDraw) {
+            return <div>Draw!</div>
+        } else {
+            return (
+                <div>
+                    {isWin && 'You win!'}
+                    {!isWin && 'You lose!'}
+                </div>
+            )
+        }
+
+    }
 
     if (isLoading) {
         return (
@@ -135,6 +218,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
         return (
             <div className={base_styles.wrapper}>
                 <div>
+                    {isEnd}
                     <div className={game_styles.row} id={cell}>
                         <div id='0' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[0]}</div>
                         <div id='1' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[1]}</div>
