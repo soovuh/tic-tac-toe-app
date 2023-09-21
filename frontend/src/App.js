@@ -1,5 +1,6 @@
 import React from 'react'
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {unstable_HistoryRouter as Router, Route, Routes} from "react-router-dom";
+import history from "./myHistory";
 
 import Home from "./containers/Home";
 import Signup from "./containers/Signup";
@@ -16,7 +17,7 @@ import store from "./store";
 
 const App = () => (
     <Provider store={store}>
-        <Router>
+        <Router history={history}>
             <Layout>
                 <Routes>
                     <Route path='/' element={<Home/>}/>

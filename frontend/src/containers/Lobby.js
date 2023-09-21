@@ -15,6 +15,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/search/`);
 
             newSocket.onopen = async () => {
+                window.addEventListener('beforeunload', stopSearch)
                 console.log("Connection opened");
 
                 setIsSearching(true);
@@ -52,10 +53,11 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             })
             console.log("send")
             await socket.send(data);
+            window.removeEventListener("beforeunload", stopSearch);
         }
     };
 
-    window.addEventListener('beforeunload', stopSearch)
+
 
 
     if (isSearching) {

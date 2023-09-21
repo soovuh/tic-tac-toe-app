@@ -20,6 +20,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const [isEnd, setIsEnd] = useState(false)
     const [isDraw, setIsDraw] = useState(false)
     const [yourTurn, setTurn] = useState(false)
+
     const navigate = useNavigate()
     const checkGame = async () => {
         try {
@@ -46,6 +47,22 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             console.error("Error checking the game:", error);
         }
     };
+
+    const handleBeforeUnload = () => {
+        if (socket) {
+            socket.sendSurr();
+            socket.close();
+        }
+    };
+
+
+    useEffect(() => {
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [socket]);
 
     useEffect(() => {
         if (!isLoading && isAuthenticated && !data) {
@@ -96,9 +113,6 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             newSocket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
                 if (data.action === 'start') {
-                    if (localStorage.getItem(game_code)) {
-                        setCellsArr(JSON.parse(localStorage.getItem(game_code)))
-                    }
                     setGame(true);
                     if (player === 'x') {
                         turn = true
@@ -114,7 +128,6 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                         setCellsArr((prevState) => {
                             const newState = prevState
                             newState[data.cell] = data.player
-                            localStorage.setItem(game_code, JSON.stringify(newState))
                             const isDraw = drawCheck(newState)
                             if (isDraw) {
                                 setIsDraw(true)
@@ -142,6 +155,15 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                 } else if (data.action === 'draw') {
                     turn = false
                     gameDraw()
+                    await newSocket.close()
+                } else if (data.action === 'surr') {
+                    console.log('surr')
+                    turn = false
+                    if (data.player === player) {
+                        gameEnd(false)
+                    } else if (data.player !== player) {
+                        gameEnd(true)
+                    }
                     await newSocket.close()
                 }
             };
@@ -178,6 +200,14 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                 })
                 await newSocket.send(data)
             }
+            newSocket.sendSurr = async () => {
+                const data = JSON.stringify({
+                    action: 'surr',
+                    player: player,
+                    uid: uid
+                })
+                await newSocket.send(data)
+            }
 
         }
     }, [socket, player, game, uid, game_code]);
@@ -186,14 +216,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
         setIsEnd(true)
         setIsWin(win)
         setGame(false)
-        localStorage.removeItem(game_code)
     }
 
     const gameDraw = () => {
         setIsEnd(true)
         setIsDraw(true)
         setGame(false)
-        localStorage.removeItem(game_code)
     }
 
     if (isEnd) {
