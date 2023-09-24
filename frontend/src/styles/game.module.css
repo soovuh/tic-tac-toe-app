@@ -20,6 +20,18 @@
     transition: color .2s;
 }
 
+.players {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.5em;
+}
+
+.note {
+    margin-top: 50px;
+    font-size: 0.7em;
+    text-align: center;
+}
+
 .row {
     display: flex;
 }
@@ -36,6 +48,9 @@
     cursor: pointer;
 }
 
+
+
 .cell:hover {
-    background-color: #eee;
+    background-color: #fff;
+    color: #980505;
 }

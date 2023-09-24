@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {Navigate, useNavigate, useParams} from "react-router-dom";
+import {Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import base_styles from "../styles/base.module.css";
 import game_styles from '../styles/game.module.css'
@@ -92,27 +92,31 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     useEffect(() => {
         let turn = false
         if (!socket && player && game === null) {
-
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/game/${game_code}/`);
 
             newSocket.onopen = async () => {
                 setSocket(newSocket)
+                if (localStorage.getItem('isPlay') === 'true') {
+                    await newSocket.sendSurr();
+                } else {
+                    localStorage.setItem('isPlay', 'true')
+                    const data = JSON.stringify({
+                        action: 'start',
+                        player: player,
+                        uid: uid,
+                        game_code: game_code,
+                    });
 
+                    await newSocket.send(data);
+                }
 
-                const data = JSON.stringify({
-                    action: 'start',
-                    player: player,
-                    uid: uid,
-                    game_code: game_code,
-                });
-
-                await newSocket.send(data);
             };
 
 
             newSocket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
                 if (data.action === 'start') {
+
                     setGame(true);
                     if (player === 'x') {
                         turn = true
@@ -138,12 +142,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                             }
                             return newState
                         })
-
                         setCell(data.player)
                         turn = !turn;
                         setTurn(turn)
                     }
                 } else if (data.action === 'win') {
+                    localStorage.removeItem('isPlay')
                     turn = false
                     if (data.player === player) {
                         gameEnd(true)
@@ -153,11 +157,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     await newSocket.close()
 
                 } else if (data.action === 'draw') {
+                    localStorage.removeItem('isPlay')
                     turn = false
                     gameDraw()
                     await newSocket.close()
                 } else if (data.action === 'surr') {
-                    console.log('surr')
+                    localStorage.removeItem('isPlay')
                     turn = false
                     if (data.player === player) {
                         gameEnd(false)
@@ -185,6 +190,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             }
 
             newSocket.sendWin = async () => {
+                localStorage.removeItem('isPlay')
                 const data = JSON.stringify({
                     action: 'win',
                     player: player,
@@ -195,12 +201,14 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             }
 
             newSocket.sendDraw = async () => {
+                localStorage.removeItem('isPlay')
                 const data = JSON.stringify({
                     action: 'draw'
                 })
                 await newSocket.send(data)
             }
             newSocket.sendSurr = async () => {
+                localStorage.removeItem('isPlay')
                 const data = JSON.stringify({
                     action: 'surr',
                     player: player,
@@ -266,6 +274,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                             <div id='7' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[7]}</div>
                             <div id='8' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[8]}</div>
                         </div>
+                    </div>
+                    <div className={game_styles.players}>
+                        {`You're playing as ${player}`}
+                    </div>
+                    <div className={game_styles.note}>
+                        Note: If you refresh, close or leave the game page, you will be scored a loss!
                     </div>
                 </div>
 

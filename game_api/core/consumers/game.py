@@ -172,7 +172,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def game_over_surr(self, surr):
-        print('this work')
         game = Game.objects.get(game_code=self.game_code)
         if game.is_friend_game:
             if surr == 'x':
