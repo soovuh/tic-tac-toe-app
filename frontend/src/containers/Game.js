@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {Link, Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
+import { Navigate, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import base_styles from "../styles/base.module.css";
 import game_styles from '../styles/game.module.css'
