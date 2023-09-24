@@ -13,6 +13,11 @@
     flex-direction: column;
 }
 
+.surr {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
 .turn {
     text-align: center;
     margin-bottom: 20px;

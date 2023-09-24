@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
+import {Link, Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import base_styles from "../styles/base.module.css";
 import game_styles from '../styles/game.module.css'
 import checkForWin from "../actions/winCheck";
 import LoadingSpinner from "../components/LoadingSpinner";
 import drawCheck from "../actions/drawCheck";
+import styles from "../styles/login.module.css";
 
 const Game = ({isAuthenticated, isLoading, user}) => {
     const {game_code, uid} = useParams();
@@ -20,6 +21,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const [isEnd, setIsEnd] = useState(false)
     const [isDraw, setIsDraw] = useState(false)
     const [yourTurn, setTurn] = useState(false)
+    const [enemySurr, setEnemySurr] = useState(false)
 
     const navigate = useNavigate()
     const checkGame = async () => {
@@ -93,7 +95,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
         let turn = false
         if (!socket && player && game === null) {
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/game/${game_code}/`);
-
+            let enemy
             newSocket.onopen = async () => {
                 setSocket(newSocket)
                 if (localStorage.getItem('isPlay') === 'true') {
@@ -120,10 +122,12 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     setGame(true);
                     if (player === 'x') {
                         turn = true
+                        enemy = 'o'
                         setTurn(true)
 
                     }
                     if (player === 'o') {
+                        enemy = 'x'
                         turn = false
                         setTurn(false)
                     }
@@ -133,12 +137,18 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                             const newState = prevState
                             newState[data.cell] = data.player
                             const isDraw = drawCheck(newState)
-                            if (isDraw) {
-                                setIsDraw(true)
-                            }
                             const isWin = checkForWin(cellsArr, player)
+                            const isEnemyWin = checkForWin(cellsArr, enemy)
+                            if (isEnemyWin) {
+                                return newState
+                            }
                             if (isWin) {
                                 setIsWin(true)
+                                return newState
+                            }
+                            if (isDraw) {
+                                setIsDraw(true)
+                                return  newState
                             }
                             return newState
                         })
@@ -167,7 +177,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     if (data.player === player) {
                         gameEnd(false)
                     } else if (data.player !== player) {
-                        gameEnd(true)
+                        gameEnd(true, true)
                     }
                     await newSocket.close()
                 }
@@ -220,7 +230,8 @@ const Game = ({isAuthenticated, isLoading, user}) => {
         }
     }, [socket, player, game, uid, game_code]);
 
-    const gameEnd = (win) => {
+    const gameEnd = (win, surr=false) => {
+        setEnemySurr(surr)
         setIsEnd(true)
         setIsWin(win)
         setGame(false)
@@ -234,12 +245,28 @@ const Game = ({isAuthenticated, isLoading, user}) => {
 
     if (isEnd) {
         if (isDraw) {
-            return <div>Draw!</div>
+            return (
+                <div className={styles.signin_wrapper}>
+                    <h1>Draw!</h1>
+                    <button onClick={() => navigate('/lobby')}>Ok</button>
+                </div>
+            )
         } else {
             return (
                 <div>
-                    {isWin && 'You win!'}
-                    {!isWin && 'You lose!'}
+                    {isWin &&
+                        <div className={styles.signin_wrapper}>
+                            <h1>You win!</h1>
+                            {enemySurr && <p className={game_styles.surr}>The enemy surrendered!</p>}
+                            <button onClick={() => navigate('/lobby')}>Ok</button>
+                        </div>
+                    }
+                    {!isWin &&
+                        <div className={styles.signin_wrapper}>
+                            <h1>You lose!</h1>
+                            <button onClick={() => navigate('/lobby')}>Ok</button>
+                        </div>
+                    }
                 </div>
             )
         }
