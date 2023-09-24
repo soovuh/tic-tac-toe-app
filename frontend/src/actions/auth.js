@@ -86,6 +86,8 @@ export const load_user = () => async dispatch => {
     });
 };
 
+
+
 export const login = (email, password) => async dispatch => {
     const config = {
         headers: {
@@ -201,6 +203,7 @@ export const reset_password_confirm = (uid, token, new_password, re_new_password
     }
 
 };
+
 
 export const logout = () => dispatch => {
     dispatch({

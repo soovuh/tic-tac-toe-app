@@ -1,5 +1,6 @@
 import React from 'react'
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {unstable_HistoryRouter as Router, Route, Routes} from "react-router-dom";
+import history from "./myHistory";
 
 import Home from "./containers/Home";
 import Signup from "./containers/Signup";
@@ -8,6 +9,7 @@ import Activate from "./containers/Activate";
 import ResetPassword from "./containers/ResetPassword";
 import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
 import Lobby from "./containers/Lobby";
+import Game from "./containers/Game";
 import Layout from "./hocs/Layout";
 
 import {Provider} from "react-redux";
@@ -15,7 +17,7 @@ import store from "./store";
 
 const App = () => (
     <Provider store={store}>
-        <Router>
+        <Router history={history}>
             <Layout>
                 <Routes>
                     <Route path='/' element={<Home/>}/>
@@ -25,6 +27,7 @@ const App = () => (
                     <Route path='/activate/:uid/:token' element={<Activate/>}/>
                     <Route path='/reset-password' element={<ResetPassword/>}/>
                     <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
+                    <Route path='/game/:game_code/:uid' element={<Game/>} />
                 </Routes>
             </Layout>
         </Router>

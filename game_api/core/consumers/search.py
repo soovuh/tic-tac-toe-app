@@ -2,6 +2,7 @@ import asyncio
 import json
 import random
 
+from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model

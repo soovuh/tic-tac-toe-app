@@ -1,7 +1,7 @@
-import os
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -13,6 +13,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Application definition
+
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -21,10 +23,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 
+    'rest_framework_simplejwt',
     'rest_framework',
     'djoser',
-    'corsheaders',
+
     'channels',
 
     'core',
@@ -32,6 +36,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -39,13 +44,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:3000',
+]
 
-ROOT_URLCONF = 'backend.urls'
-
+ROOT_URLCONF = 'game_api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -63,8 +72,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
-ASGI_APPLICATION = 'backend.asgi.application'
+WSGI_APPLICATION = 'game_api.wsgi.application'
+ASGI_APPLICATION = 'game_api.asgi.application'
 
 DATABASES = {
     'default': {
@@ -119,7 +128,6 @@ EMAIL_USE_TLS = True
 # Auth configuration
 AUTH_USER_MODEL = 'accounts.UserAccount'
 
-# Rest framework setup
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -159,6 +167,9 @@ DJOSER = {
 # Channels settings
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'CONFIG': {
+            'hosts': [os.environ.get('REDIS_URL')]
+        }
     }
 }

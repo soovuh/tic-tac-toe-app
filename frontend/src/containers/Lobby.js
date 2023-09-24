@@ -1,12 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {Link, Navigate, useNavigate} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 import base_styles from "../styles/base.module.css";
 import styles from "../styles/login.module.css";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Lobby = ({isAuthenticated, isLoading, user}) => {
-    const navigate = useNavigate();
     const [isSearching, setIsSearching] = useState(false);
     const [code, setCode] = useState(null);
     const [socket, setSocket] = useState(null);
@@ -16,7 +15,6 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/ws/search/`);
 
             newSocket.onopen = async () => {
-                console.log("Connection opened");
 
                 setIsSearching(true);
                 setSocket(newSocket);
@@ -30,14 +28,13 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
             };
             newSocket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
-                console.log('Match found:', data.code);
                 setCode(data.code)
                 setIsSearching(false);
 
 
             };
             newSocket.onclose = () => {
-                console.log("connection closed");
+
                 setSocket(null);
                 setIsSearching(false);
             };
@@ -51,12 +48,16 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
                 action: 'close',
                 user_id: user.id
             })
-            console.log("send")
             await socket.send(data);
         }
     };
+    useEffect(() => {
+        window.addEventListener("beforeunload", stopSearch);
 
-    window.addEventListener('beforeunload', stopSearch)
+        return () => {
+            window.removeEventListener("beforeunload", stopSearch);
+        };
+    }, [socket]);
 
 
     if (isSearching) {
@@ -72,7 +73,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     }
 
     if (code) {
-        return <Navigate to={`/game/${code}`}/>
+        return <Navigate to={`/game/${code}/${user.id}`}/>
     }
     if (!isAuthenticated && !isLoading) {
         return <Navigate to='/login'/>;
