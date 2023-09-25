@@ -2,7 +2,6 @@ import {connect} from "react-redux";
 import {useEffect, useState} from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
-import base_styles from '../styles/base.module.css'
 import toplist_styles from '../styles/toplist.module.css'
 
 const TopList = ({isAuthenticated, isLoading, user}) => {
@@ -10,7 +9,7 @@ const TopList = ({isAuthenticated, isLoading, user}) => {
     const getTopList = async () => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get_toplist/`);
-            // setData(res.data);
+            setData(res.data);
             setData([
                     {"id": 1, "name": "Player1", "games": 53, "wins": 26, "win_rate": 49.1},
                     {"id": 2, "name": "Player2", "games": 82, "wins": 37, "win_rate": 45.1},
@@ -34,7 +33,7 @@ const TopList = ({isAuthenticated, isLoading, user}) => {
                     {"id": 20, "name": "Player20", "games": 95, "wins": 43, "win_rate": 45.3}
                 ]
             )
-            console.log(res.data[0])
+
         } catch (e) {
             console.error(e)
         }
@@ -48,28 +47,28 @@ const TopList = ({isAuthenticated, isLoading, user}) => {
     if (data) {
         return (
             <div className={toplist_styles.wrapper}>
-                <div className={toplist_styles['table-wrapper']}>
-                    <table className={toplist_styles["top-list-table"]}>
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Games</th>
-                            <th>Wins</th>
-                            <th>Win Rate</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {data.map(item => (
-                            <tr key={item.id}>
-                                <td>{item.name}</td>
-                                <td>{item.games}</td>
-                                <td>{item.wins}</td>
-                                <td>{item.win_rate}</td>
+                    <div className={toplist_styles['table-wrapper']}>
+                        <table className={toplist_styles["top-list-table"]}>
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Games</th>
+                                <th>Wins</th>
+                                <th>Winrate</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                            {data.map(item => (
+                                <tr key={item.id}>
+                                    <td>{item.name}</td>
+                                    <td>{item.games}</td>
+                                    <td>{item.wins}</td>
+                                    <td>{item.win_rate}%</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
             </div>
         );
     } else {
