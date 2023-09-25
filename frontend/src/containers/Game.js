@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import { Navigate, useNavigate, useParams} from "react-router-dom";
+import {Navigate, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import base_styles from "../styles/base.module.css";
 import game_styles from '../styles/game.module.css'
@@ -22,6 +22,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
     const [isDraw, setIsDraw] = useState(false)
     const [yourTurn, setTurn] = useState(false)
     const [enemySurr, setEnemySurr] = useState(false)
+    const [seconds, setSeconds] = useState(20)
 
     const navigate = useNavigate()
     const checkGame = async () => {
@@ -56,7 +57,42 @@ const Game = ({isAuthenticated, isLoading, user}) => {
             socket.close();
         }
     };
+    useEffect(() => {
+        if (seconds === 0 && yourTurn) {
+            const asyncFunc = async () => {
+                if (socket) {
+                    await socket.sendSurr()
+                }
+            }
+            asyncFunc()
+        } else if (seconds === 0 && !yourTurn) {
+            const asyncFunc = async () => {
+                if (socket) {
+                    await socket.sendSurr(true)
+                }
+            }
+            asyncFunc()
+        }
+    }, [seconds])
 
+    useEffect(() => {
+        let timer;
+
+        if (yourTurn && seconds > 0) {
+            timer = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds - 1);
+            }, 1000);
+        } else if (!yourTurn && seconds > 0) {
+
+            timer = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds - 1);
+            }, 1000);
+        }
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [yourTurn, seconds])
 
     useEffect(() => {
         window.addEventListener("beforeunload", handleBeforeUnload);
@@ -133,6 +169,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                     }
                 } else if (data.action === 'turn') {
                     if (!cellsArr[data.cell]) {
+                        setSeconds(20)
                         setCellsArr((prevState) => {
                             const newState = prevState
                             newState[data.cell] = data.player
@@ -148,7 +185,7 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                             }
                             if (isDraw) {
                                 setIsDraw(true)
-                                return  newState
+                                return newState
                             }
                             return newState
                         })
@@ -217,20 +254,41 @@ const Game = ({isAuthenticated, isLoading, user}) => {
                 })
                 await newSocket.send(data)
             }
-            newSocket.sendSurr = async () => {
+            newSocket.sendSurr = async (enemy = false) => {
                 localStorage.removeItem('isPlay')
-                const data = JSON.stringify({
-                    action: 'surr',
-                    player: player,
-                    uid: uid
-                })
-                await newSocket.send(data)
+                if (!enemy) {
+                    const data = JSON.stringify({
+                        action: 'surr',
+                        player: player,
+                        uid: uid
+                    })
+                    await newSocket.send(data)
+                } else {
+                    if (player === 'x') {
+                        const enemy_surr = 'o'
+                        const data = JSON.stringify({
+                            action: 'surr',
+                            player: enemy_surr,
+                            uid: uid
+                        })
+                        await newSocket.send(data)
+                    } else {
+                        const enemy_surr = 'x'
+                        const data = JSON.stringify({
+                            action: 'surr',
+                            player: enemy_surr,
+                            uid: uid
+                        })
+                        await newSocket.send(data)
+                    }
+                }
+
             }
 
         }
     }, [socket, player, game, uid, game_code]);
 
-    const gameEnd = (win, surr=false) => {
+    const gameEnd = (win, surr = false) => {
         setEnemySurr(surr)
         setIsEnd(true)
         setIsWin(win)
@@ -281,29 +339,35 @@ const Game = ({isAuthenticated, isLoading, user}) => {
         return (
             <div className={base_styles.wrapper}>
                 <div className={game_styles.game_container}>
-                    <div className={game_styles.turn} style={{color: yourTurn ? '#fff' : '#d20606'}}>
-                        {yourTurn && "Your turn"}
-                        {!yourTurn && 'Enemy turn'}
+                    <div className={game_styles.turn}>
+                        <span style={{color: yourTurn ? '#fff' : '#d20606'}}>
+                            {yourTurn && "Your turn:"}
+                            {!yourTurn && 'Enemy turn:'}
+                        </span>
+                        <span style={{color: yourTurn ? '#fff' : '#d20606'}}>
+                            {seconds}
+                        </span>
+
                     </div>
                     <div className={game_styles['tic-tac-toe']}>
                         <div className={game_styles.row} id={cell}>
-                            <div id='0' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[0]}</div>
-                            <div id='1' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[1]}</div>
-                            <div id='2' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[2]}</div>
+                            <div id='0' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[0].toUpperCase()}</div>
+                            <div id='1' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[1].toUpperCase()}</div>
+                            <div id='2' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[2].toUpperCase()}</div>
                         </div>
                         <div className={game_styles.row}>
-                            <div id='3' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[3]}</div>
-                            <div id='4' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[4]}</div>
-                            <div id='5' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[5]}</div>
+                            <div id='3' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[3].toUpperCase()}</div>
+                            <div id='4' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[4].toUpperCase()}</div>
+                            <div id='5' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[5].toUpperCase()}</div>
                         </div>
                         <div className={game_styles.row}>
-                            <div id='6' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[6]}</div>
-                            <div id='7' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[7]}</div>
-                            <div id='8' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[8]}</div>
+                            <div id='6' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[6].toUpperCase()}</div>
+                            <div id='7' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[7].toUpperCase()}</div>
+                            <div id='8' onClick={socket.doTurn} className={game_styles.cell}>{cellsArr[8].toUpperCase()}</div>
                         </div>
                     </div>
                     <div className={game_styles.players}>
-                        {`You're playing as ${player}`}
+                        You're playing as  <span style={{fontWeight: "bold", fontSize: '1.3em'}}>{player.toUpperCase()}</span>
                     </div>
                     <div className={game_styles.note}>
                         Note: If you refresh, close or leave the game page, you will be scored a loss!

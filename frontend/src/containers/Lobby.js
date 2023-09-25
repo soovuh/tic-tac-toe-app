@@ -9,6 +9,7 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     const [isSearching, setIsSearching] = useState(false);
     const [code, setCode] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [isPlay, setIsPlay] = useState(localStorage.getItem('isPlay') === 'true');
 
     const startSearch = () => {
         if (user && !socket) {
@@ -60,6 +61,32 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     }, [socket]);
 
 
+    useEffect(() => {
+        const checkLocalStorage = () => {
+            const storedIsPlay = localStorage.getItem('isPlay');
+            if (storedIsPlay === null) {
+                setIsPlay(false)
+                clearInterval(interval);
+            }
+        };
+
+        const timeOut = () => {
+            localStorage.removeItem('isPlay')
+            setIsPlay(false)
+            clearTimeout(timeout)
+        };
+        const interval = setInterval(checkLocalStorage, 1000);
+        const timeout = setTimeout(timeOut, 30000);
+
+        checkLocalStorage();
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout)
+        };
+    }, []);
+
+
     if (isSearching) {
         return (
             <div className={base_styles.wrapper}>
@@ -75,9 +102,19 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
     if (code) {
         return <Navigate to={`/game/${code}/${user.id}`}/>
     }
-    if (!isAuthenticated && !isLoading) {
+    if (isPlay && isAuthenticated && !isLoading) {
+        return (
+            <div className={base_styles.wrapper}>
+                <div className={styles.signin_wrapper}>
+                    <h2>You have left the previous game. To get the right to search for a new game, wait up to 30
+                        seconds without reloading the page...</h2>
+                    <LoadingSpinner/>
+                </div>
+            </div>
+        )
+    } else if (!isAuthenticated && !isLoading) {
         return <Navigate to='/login'/>;
-    } else if (isAuthenticated && !isLoading) {
+    } else if (isAuthenticated && !isLoading && !isPlay) {
         return (
             <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>
                 <div className={styles.signin_wrapper}>

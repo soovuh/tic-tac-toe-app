@@ -31,14 +31,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         action = data.get('action')
         if action == 'start':
-            if count == 2:
-                await self.channel_layer.group_send(
-                    self.game_group_code,
-                    {
-                        'type': 'game_start',
-                    }
-                )
-            else:
+            if count == 1:
                 asyncio.create_task(self.wait_for_match())
         if action == 'turn':
             player = data.get('player')
@@ -84,12 +77,21 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'uid': uid,
                 }
             )
+        if hasattr(self, 'timeout_task'):
+            self.timeout_task.cancel()
+        if count == 1:
+            self.timeout_task = asyncio.create_task(self.timeout_handler())
 
     async def disconnect(self, code):
         count = getattr(self.channel_layer, self.game_group_code, 0)
         setattr(self.channel_layer, self.game_group_code, count - 1)
         if count == 1:
             delattr(self.channel_layer, self.game_group_code)
+
+    async def timeout_handler(self):
+        await asyncio.sleep(30)
+        await self.game_over_timeout()
+        await self.close()
 
     async def game_surr(self, event):
         player = event['player']
@@ -199,5 +201,19 @@ class GameConsumer(AsyncWebsocketConsumer):
             user_x.wins += 1
         elif game.winner == 'o':
             user_o.wins += 1
+        user_x.save()
+        user_o.save()
+
+    @database_sync_to_async
+    def game_over_timeout(self):
+        game = Game.objects.get(game_code=self.game_code)
+        game.is_over = True
+        game.save()
+        uxid = game.x_player_id
+        uoid = game.o_player_id
+        user_x = User.objects.get(id=uxid)
+        user_o = User.objects.get(id=uoid)
+        user_x.games += 1
+        user_o.games += 1
         user_x.save()
         user_o.save()

@@ -20,8 +20,15 @@
 
 .turn {
     text-align: center;
+    display: flex;
+    width: 300px;
+    justify-content: space-around;
     margin-bottom: 20px;
     font-size: 2em;
+    transition: color .2s;
+}
+
+.turn span {
     transition: color .2s;
 }
 
@@ -47,7 +54,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: 50px;
     font-weight: bold;
     border: 1px solid #333;
     cursor: pointer;
