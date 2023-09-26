@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .table-wrapper {
@@ -49,6 +50,28 @@ table thead th {
     background-color: #980505;
     color: #fff;
     border: 2px solid #d3d3d3;
+    font-weight: bold;
+}
+
+.user_row {
+    background-color: #fff;
+    color: #980505;
+}
+
+.user_row > td {
+    color: #980505;
+}
+.find_btn_wrap {
+    width: 90%;
+    margin-top: 10px;
+    height: 40px;
+    display: flex;
+    justify-content: end;
+}
+
+.find_btn {
+    width: 200px;
+    height: 40px;
 }
 
 table tr th {
