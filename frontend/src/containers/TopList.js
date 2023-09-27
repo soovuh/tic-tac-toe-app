@@ -2,6 +2,9 @@ import {connect} from "react-redux";
 import {useEffect, useState} from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
+import arrows from '../arrows.png'
+import arrows_bot from '../arrows_bot.png'
+import arrows_top from '../arrows_top.png'
 import toplist_styles from '../styles/toplist.module.css'
 
 const TopList = ({isAuthenticated, isLoading, user}) => {
@@ -72,10 +75,38 @@ const TopList = ({isAuthenticated, isLoading, user}) => {
                     <table className={toplist_styles["top-list-table"]}>
                         <thead>
                         <tr>
-                            <th onClick={() => setNewOrdering('name')}>Name</th>
-                            <th onClick={() => setNewOrdering('games')}>Games</th>
-                            <th onClick={() => setNewOrdering('wins')}>Wins</th>
-                            <th onClick={() => setNewOrdering('win_rate')}>Winrate</th>
+                            <th onClick={() => setNewOrdering('name')}>
+                                <div className={toplist_styles.head_cell}>
+                                    <span>Name </span>
+                                    {currentOrdering[1] !== 'name' && <img src={arrows} alt=""/>}
+                                    {currentOrdering[1] === 'name' && currentOrdering[0] === '-' && <img src={arrows_bot} alt=""/>}
+                                    {currentOrdering[1] === 'name' && currentOrdering[0] === '' && <img src={arrows_top} alt=""/>}
+                                </div>
+                            </th>
+                            <th onClick={() => setNewOrdering('games')}>
+                                <div className={toplist_styles.head_cell}>
+                                    <span>Games </span>
+                                    {currentOrdering[1] !== 'games' && <img src={arrows} alt=""/>}
+                                    {currentOrdering[1] === 'games' && currentOrdering[0] === '-' && <img src={arrows_bot} alt=""/>}
+                                    {currentOrdering[1] === 'games' && currentOrdering[0] === '' && <img src={arrows_top} alt=""/>}
+                                </div>
+                            </th>
+                            <th onClick={() => setNewOrdering('wins')}>
+                                <div className={toplist_styles.head_cell}>
+                                    <span>Wins </span>
+                                    {currentOrdering[1] !== 'wins' && <img src={arrows} alt=""/>}
+                                    {currentOrdering[1] === 'wins' && currentOrdering[0] === '-' && <img src={arrows_bot} alt=""/>}
+                                    {currentOrdering[1] === 'wins' && currentOrdering[0] === '' && <img src={arrows_top} alt=""/>}
+                                </div>
+                            </th>
+                            <th onClick={() => setNewOrdering('win_rate')}>
+                                <div className={toplist_styles.head_cell}>
+                                    <span>Winrate </span>
+                                    {currentOrdering[1] !== 'win_rate' && <img src={arrows} alt=""/>}
+                                    {currentOrdering[1] === 'win_rate' && currentOrdering[0] === '-' && <img src={arrows_bot} alt=""/>}
+                                    {currentOrdering[1] === 'win_rate' && currentOrdering[0] === '' && <img src={arrows_top} alt=""/>}
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>

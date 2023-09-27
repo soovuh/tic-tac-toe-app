@@ -34,6 +34,7 @@
     left: 0;
     background-color: rgba(22, 23, 27, .8);
     z-index: 100;
+    user-select: none;
 }
 
 .entrance_anim {

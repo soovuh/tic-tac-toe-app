@@ -1,6 +1,6 @@
 .wrapper {
     width: 90%;
-    height: 78vh;
+    height: 76vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,7 +30,22 @@ table th {
     background-color: #980505;
     color: #fff;
     position: static;
+    cursor: pointer;
+    user-select: none;
 }
+
+.head_cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+table th img {
+    width: 15px
+}
+
+
 
 table tr th,
 table tr td {
@@ -54,12 +69,11 @@ table thead th {
 }
 
 .user_row {
-    background-color: #fff;
-    color: #980505;
+    background-color: #F2F2F2;
 }
 
 .user_row > td {
-    color: #980505;
+     color: #000;
 }
 .find_btn_wrap {
     width: 90%;

@@ -33,6 +33,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         if action == 'start':
             if count == 1:
                 asyncio.create_task(self.wait_for_match())
+            elif count == 2:
+                asyncio.create_task(self.wait_for_match())
         if action == 'turn':
             player = data.get('player')
             cell = data.get('cell')
