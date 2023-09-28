@@ -15,6 +15,7 @@ import Layout from "./hocs/Layout";
 import {Provider} from "react-redux";
 import store from "./store";
 import TopList from "./containers/TopList";
+import About from "./containers/About";
 
 const App = () => (
     <Provider store={store}>
@@ -30,6 +31,7 @@ const App = () => (
                     <Route path='/reset-password' element={<ResetPassword/>}/>
                     <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm/>}/>
                     <Route path='/game/:game_code/:uid' element={<Game/>}/>
+                    <Route path='/about' element={<About/>}/>
                 </Routes>
             </Layout>
         </Router>

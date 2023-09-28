@@ -120,9 +120,6 @@ const Lobby = ({isAuthenticated, isLoading, user}) => {
                 <div className={styles.signin_wrapper}>
                     <h1>Start searching</h1>
                     <button onClick={startSearch}>Start Search</button>
-                    <p>
-                        Wanna play with friend? <Link to='/lobby-friend'>Click here</Link>
-                    </p>
                 </div>
             </div>
         )

@@ -60,7 +60,7 @@ const Signup = ({signup, isAuthenticated, isLoading}) => {
         )
     }
     if (isAuthenticated && !isLoading) {
-        return <Navigate to='/profile'/>
+        return <Navigate to='/'/>
     } else if (!isAuthenticated && !isLoading) {
         return (
             <div className={`${base_styles.wrapper} ${base_styles.entrance_anim}`}>

@@ -20,7 +20,6 @@ const Navbar = ({logout, isAuthenticated, isLoading}) => {
                                 <li><Link className={base_styles["nav-link"]} to='/'>Home</Link></li>
                                 <li><Link className={base_styles["nav-link"]} to='/toplist'>TopList</Link></li>
                                 <li><Link className={base_styles["nav-link"]} to='/about'>About</Link></li>
-                                <li><Link className={base_styles["nav-link"]} to='/profile'>Profile</Link></li>
                                 <li><Link className={base_styles["nav-link"]} to="/login"
                                           onClick={logout}>Logout</Link>
                                 </li>
@@ -43,8 +42,6 @@ const Navbar = ({logout, isAuthenticated, isLoading}) => {
                               to='/toplist'>TopList</Link>
                         <Link onClick={() => setIsShown(false)} className={base_styles["nav-link"]} to='/about'>About</Link>
 
-                        <Link onClick={() => setIsShown(false)} className={base_styles["nav-link"]}
-                              to='/profile'>Profile</Link>
                         <Link onClick={() => {
                             setIsShown(false)
                             logout()
