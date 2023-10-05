@@ -1,8 +1,8 @@
 from djoser.serializers import UserCreateSerializer
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-User = get_user_model()
+from accounts.models import UserAccount as User
+
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):

@@ -1,11 +1,10 @@
-from django.contrib.auth import get_user_model
 from django.db.models import F, ExpressionWrapper, FloatField, Case, When, Value
 from rest_framework import viewsets, filters
 from rest_framework.permissions import AllowAny
 
 from accounts.serializers import TopListSerializer
 
-User = get_user_model()
+from accounts.models import UserAccount as User
 
 
 class TopListViewSet(viewsets.ReadOnlyModelViewSet):

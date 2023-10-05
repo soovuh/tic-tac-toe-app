@@ -3,12 +3,10 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from channels.layers import get_channel_layer
-from django.contrib.auth import get_user_model
 
 from core.models import Game
 
-User = get_user_model()
+from accounts.models import UserAccount as User
 
 
 class GameConsumer(AsyncWebsocketConsumer):

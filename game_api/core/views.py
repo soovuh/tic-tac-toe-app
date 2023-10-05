@@ -1,10 +1,10 @@
-from django.contrib.auth import get_user_model
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Game
 
-User = get_user_model()
+from accounts.models import UserAccount as User
 
 
 class GameAPIView(APIView):
