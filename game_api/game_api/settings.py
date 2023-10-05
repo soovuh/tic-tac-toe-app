@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts',
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,7 +36,6 @@ INSTALLED_APPS = [
     'djoser',
 
     'channels',
-    'accounts',
     'core',
 ]
 
