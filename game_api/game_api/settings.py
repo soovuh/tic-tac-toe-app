@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-
+    'accounts',
     'rest_framework_simplejwt',
     'rest_framework',
     'djoser',
@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'channels',
 
     'core',
-    'accounts',
 ]
 
 MIDDLEWARE = [
