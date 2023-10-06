@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from accounts.views import TopListViewSet
 from core.views import GameAPIView
-from . import routing
+from game_api import routing
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 router = DefaultRouter()
