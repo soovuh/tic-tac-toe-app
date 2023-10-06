@@ -1,4 +1,3 @@
-from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import re_path
 from core.consumers.search import SearchConsumer
 from core.consumers.game import GameConsumer

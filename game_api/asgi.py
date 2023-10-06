@@ -1,13 +1,18 @@
 import os
+
+import django
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from game_api import routing
 
+asgi_app = get_asgi_application()
+
+from game_api import routing
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "game_api.settings")
+django.setup()
 
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
+    "http": asgi_app,
     "websocket": AuthMiddlewareStack(
         URLRouter(
             routing.websocket_urlpatterns
