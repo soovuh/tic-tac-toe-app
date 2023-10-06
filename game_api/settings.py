@@ -1,7 +1,3 @@
-import django
-
-django.setup()
-
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -21,22 +17,18 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
-    'corsheaders',
-
-    'rest_framework_simplejwt',
     'rest_framework',
+    'rest_framework_simplejwt',
     'djoser',
-
+    'corsheaders',
     'channels',
+    'accounts',
     'core',
 ]
 
