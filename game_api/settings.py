@@ -49,6 +49,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3000',
+    'https://tic-tac-toe-online-t78u.onrender.com'
 ]
 
 ROOT_URLCONF = 'game_api.urls'
